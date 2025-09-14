@@ -331,6 +331,7 @@ def main(args):
             report_to="none",
             run_name="none",
             metric_for_best_model="{}_loss".format(args.data_path),
+            max_steps=args.max_steps,
         ),
         data_collator=transformers.DataCollatorForSeq2Seq(
             tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
