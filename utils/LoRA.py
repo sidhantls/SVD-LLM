@@ -324,7 +324,7 @@ def main(args):
             eval_steps=args.max_steps//4,
             save_steps=args.max_steps//4,
             output_dir=args.output_dir,
-            save_total_limit=2, # reduce save limit
+            save_total_limit=3, # reduce save limit
             load_best_model_at_end=True,
             ddp_find_unused_parameters=None,
             group_by_length=args.group_by_length,
