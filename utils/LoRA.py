@@ -321,7 +321,7 @@ def main(args):
             evaluation_strategy="steps",
             save_strategy="steps",
             save_safetensors=False,
-            eval_steps=args.max_steps//4,
+            eval_steps=args.max_steps//3,
             save_steps=args.max_steps//4,
             output_dir=args.output_dir,
             save_total_limit=3, # reduce save limit
