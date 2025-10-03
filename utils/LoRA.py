@@ -304,6 +304,20 @@ def main(args):
                 test_data = split_and_tokenizer(test_data, tokenizer, seq_len, field_name='sentence')
             val_data[extra_dataset] = test_data
 
+
+
+    # number of samples in the train dataset (Hugging Face Dataset)
+    num_train_examples = len(train_data)
+    effective_batch = args.micro_batch_size * gradient_accumulation_steps
+    num_update_steps_per_epoch = math.ceil(num_train_examples / effective_batch)
+    total_training_steps = num_update_steps_per_epoch * args.num_epochs
+    if getattr(args, "max_steps", None):
+        total_training_steps = args.max_steps
+    
+    # compute eval_steps so evaluation happens 4 times total (approx evenly spaced)
+    # ensure eval_steps >= 1
+    eval_steps = max(1, total_training_steps // 4)
+
     trainer = transformers.Trainer(
         model=model,
         train_dataset=train_data,
@@ -321,10 +335,10 @@ def main(args):
             evaluation_strategy="steps",
             save_strategy="steps",
             save_safetensors=False,
-            eval_steps=args.max_steps//3,
-            save_steps=args.max_steps//4,
+            eval_steps=total_training_steps//5,
+            save_steps=total_training_steps//5,
             output_dir=args.output_dir,
-            save_total_limit=3, # reduce save limit
+            save_total_limit=5,
             load_best_model_at_end=True,
             ddp_find_unused_parameters=None,
             group_by_length=args.group_by_length,
@@ -371,7 +385,7 @@ if __name__ == "__main__":
     parser.add_argument('--val_set_size', type=int, default=2000, help='validation set size')
     parser.add_argument('--prompt_template_name', type=str, default="alpaca", help="The prompt template to use, will default to alpaca.")
     parser.add_argument('--no_instruction', action='store_true', default=False, help="Whether to use the instruction template or not.")
-    parser.add_argument('--max_steps', type=int, default=10000, help='output directory')
+    parser.add_argument('--max_steps', type=int, default=None, help='Max number of training steps')
 
     # Lora Configuration
     parser.add_argument('--lora_r', type=int, default=8, help='lora r')
