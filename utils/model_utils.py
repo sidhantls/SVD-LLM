@@ -17,7 +17,8 @@ def get_model_from_huggingface(model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id, device_map="cpu", trust_remote_code=True)
     else:
         # tokenizer = LlamaTokenizer.from_pretrained(model_id, device_map="cpu", trust_remote_code=True)
-        tokenizer = LlamaTokenizer.from_pretrained(model_id, trust_remote_code=True) # device map does not work with llama-3-8b
+        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True, use_fast=True) # above does not work with llama-3-8b
+
 
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map="cpu", torch_dtype=torch.float16, trust_remote_code=True, cache_dir=None)
     model.seqlen = 2048
