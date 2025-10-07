@@ -579,3 +579,6 @@ if __name__ == '__main__':
             ppl_eval(model, tokenizer, datasets=['wikitext2'], model_seq_len=args.model_seq_len, batch_size=args.eval_batch_size, device=args.DEV)
         elif args.step == 5:
             eff_eval(model, tokenizer, generated_len=args.gen_seq_len, batch_size=args.eval_batch_size, device=args.DEV)
+        elif args.step == 6: # step: 4.1. Does not do ppl eval, since too big for GPU. Just do the model merging in this step
+            pass
+            
