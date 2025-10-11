@@ -526,7 +526,11 @@ if __name__ == '__main__':
         model = model.eval()
         if args.profiling_mat_path is None:
             cali_white_data = get_calib_train_data(args.dataset, tokenizer, args.whitening_nsamples, seqlen=args.model_seq_len)
-            profiling_mat = profle_svdllm_low_resource(args.model, model, cali_white_data, args.DEV)
+            # choose profiling implementation according to the --run_low_resource flag
+            if args.run_low_resource:
+                profiling_mat = profle_svdllm_low_resource(args.model, model, cali_white_data, args.DEV)
+            else:
+                profiling_mat = profle_svdllm(args.model, model, cali_white_data, args.DEV)
             if args.save_path is not None:
                 torch.save(profiling_mat, args.save_path + "/" + args.model.replace("/", "_").replace("-", "_") + '_profiling_'+ args.dataset + '_' + str(args.whitening_nsamples)  + '_' + str(args.seed)+ '.pt')
         else:
@@ -541,7 +545,11 @@ if __name__ == '__main__':
         model = model.float()  # need to set to float
         if args.profiling_mat_path is None:
             cali_white_data = get_calib_train_data(args.dataset, tokenizer, args.whitening_nsamples, seqlen=args.model_seq_len)
-            profiling_mat = profle_svdllm_low_resource(args.model, model, cali_white_data, args.DEV)
+            # choose profiling implementation according to the --run_low_resource flag
+            if args.run_low_resource:
+                profiling_mat = profle_svdllm_low_resource(args.model, model, cali_white_data, args.DEV)
+            else:
+                profiling_mat = profle_svdllm(args.model, model, cali_white_data, args.DEV)
             if args.save_path is not None:
                 torch.save(profiling_mat, args.save_path + "/" + args.model.replace("/", "_").replace("-", "_") + '_profiling_'+ args.dataset + '_' + str(args.whitening_nsamples)  + '_' + str(args.seed)+ '.pt')
         else:
