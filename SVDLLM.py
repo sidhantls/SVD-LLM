@@ -174,7 +174,7 @@ def profle_svdllm_low_resource(model_name, model, calib_loader, dev):
                 scaling_diag_matrix = torch.linalg.cholesky(raw_scaling_diag_matrix)
                 eigenvalues = None
                 del eigenvalues
-            layer_profile[name] = scaling_diag_matrix.cpu().float()
+            layer_profile[name] = scaling_diag_matrix.cpu().float() # lower this for 13b
             # scaling_diag_matrix = raw_scaling_diag_matrix = subset[name].raw_scaling_diag_matrix = None
             subset[name].raw_scaling_diag_matrix = None
             del scaling_diag_matrix, raw_scaling_diag_matrix, subset[name].raw_scaling_diag_matrix
