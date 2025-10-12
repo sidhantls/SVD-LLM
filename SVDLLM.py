@@ -175,6 +175,8 @@ def profle_svdllm_low_resource(model_name, model, calib_loader, dev):
                 eigenvalues = None
                 del eigenvalues
             layer_profile[name] = scaling_diag_matrix.cpu().float()
+            # scaling_diag_matrix = raw_scaling_diag_matrix = subset[name].raw_scaling_diag_matrix = None
+            subset[name].raw_scaling_diag_matrix = None
             del scaling_diag_matrix, raw_scaling_diag_matrix, subset[name].raw_scaling_diag_matrix
             gc.collect()
             torch.cuda.empty_cache()
@@ -182,7 +184,6 @@ def profle_svdllm_low_resource(model_name, model, calib_loader, dev):
         profiling_mat[i] = layer_profile
         inps = outs
         torch.cuda.empty_cache()
-        gc.collect()
     return profiling_mat
      
  
