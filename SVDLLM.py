@@ -13,6 +13,7 @@ from component.svd_mistral import SVD_MistralAttention, SVD_MistralMLP
 from component.svd_opt import SVDOPTDecoderLayer
 from utils.model_utils import *
 from evaluater import * 
+import gc 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 parent_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -127,6 +128,7 @@ def profle_svdllm_low_resource(model_name, model, calib_loader, dev):
     else:  
         model.model.embed_tokens = model.model.embed_tokens.cpu()
         model.model.norm = model.model.norm.cpu()
+
     torch.cuda.empty_cache()
     outs = torch.zeros_like(inps)
     attention_masks = cache['attention_mask']
@@ -172,14 +174,15 @@ def profle_svdllm_low_resource(model_name, model, calib_loader, dev):
                 scaling_diag_matrix = torch.linalg.cholesky(raw_scaling_diag_matrix)
                 eigenvalues = None
                 del eigenvalues
-            layer_profile[name] = scaling_diag_matrix.cpu()
-            scaling_diag_matrix = raw_scaling_diag_matrix = subset[name].raw_scaling_diag_matrix = None
+            layer_profile[name] = scaling_diag_matrix.cpu().float()
             del scaling_diag_matrix, raw_scaling_diag_matrix, subset[name].raw_scaling_diag_matrix
+            gc.collect()
             torch.cuda.empty_cache()
         layers[i] = layer.cpu()
         profiling_mat[i] = layer_profile
         inps = outs
         torch.cuda.empty_cache()
+        gc.collect()
     return profiling_mat
      
  
